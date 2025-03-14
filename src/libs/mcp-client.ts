@@ -21,6 +21,7 @@ const githubMCPServerScriptPath = path.join(
   'dist',
   'index.js',
 );
+const myMCPServerScriptPath = path.join(process.cwd(), 'src', 'libs', 'mcp-server', 'index.ts');
 
 // 以下のdeepseekのモデルだとreasoningを受け付けない（ドキュメントには受け付けていると書いているが...）
 // const MODEL_NAME = "deepseek-r1-distill-llama-70b";
@@ -36,7 +37,7 @@ export class MyMCPClient {
 
   constructor() {
     this.mcpClient = new MCPClient({
-      name: 'github-mcp-client',
+      name: 'my-mcp-client',
       version: '1.0.0',
     });
     this.openaiClient = new OpenAI({
@@ -55,7 +56,8 @@ export class MyMCPClient {
     if (!githubPersonalAccessToken) throw new Error('GITHUB_PERSONAL_ACCESS_TOKEN is not set');
 
     this.transport = new StdioClientTransport({
-      command: githubMCPServerScriptPath,
+      command: 'tsx',
+      args: [myMCPServerScriptPath],
       env: {
         GITHUB_PERSONAL_ACCESS_TOKEN: githubPersonalAccessToken,
         ...(process.env as Record<string, string>),
@@ -87,7 +89,7 @@ export class MyMCPClient {
       model: MODEL_NAME,
       messages: messages,
       tools: availableTools,
-      tool_choice: 'auto',
+      tool_choice: 'required',
       max_completion_tokens: 4096,
     });
 
@@ -161,7 +163,7 @@ export class MyMCPClient {
       messages,
       stream: false,
       tools: availableTools,
-      tool_choice: 'auto',
+      tool_choice: 'required',
     });
 
     // const message = response.choices[0].message;
