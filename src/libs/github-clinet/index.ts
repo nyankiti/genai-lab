@@ -38,6 +38,6 @@ export class GithubClient {
     prCount = 10,
     filesPerPR = 20,
   ): Promise<RepositoryInfo | null> {
-    return this.repositoryService.getRepositoryPullRequests(owner, name, prCount, filesPerPR);
+    return this.repositoryService.getRecentRepositoryPullRequests(owner, name, prCount, filesPerPR);
   }
 }

@@ -21,11 +21,11 @@ export interface RepositoryInfo {
     nodes: Array<PullRequestInfo>;
   };
 }
-
 export interface PullRequestInfo {
   id: string;
   number: number;
   title: string;
+  body: string; // ← PRの説明を追加
   url: string;
   state: string;
   createdAt: string;
@@ -46,9 +46,24 @@ export interface PullRequestInfo {
   } | null;
   comments: {
     totalCount: number;
+    nodes: Array<{
+      body: string;
+      author: {
+        login: string;
+        avatarUrl: string;
+      } | null;
+    }>;
   };
   reviews: {
     totalCount: number;
+    nodes: Array<{
+      state: string; // APPROVED, CHANGES_REQUESTED, COMMENTED など
+      body: string;
+      author: {
+        login: string;
+        avatarUrl: string;
+      } | null;
+    }>;
   };
   commits: {
     totalCount: number;
@@ -69,108 +84,126 @@ export interface PullRequestInfo {
   } | null;
 }
 
-export interface PullRequestSummary {
-  repositoryBasicInfo: string;
-  mergedPullRequestsOverview: string;
-  recentPullRequests: string;
-  fileChangesAnalysis: string;
-}
-
 export class RepositoryService {
   constructor(private client: ApolloClient<NormalizedCacheObject>) {}
-
   /**
-   * リポジトリの情報と直近のマージ済みPRの詳細情報を取得する
+   * 直近1週間のマージ済みPRの詳細情報を取得する
    * @param owner リポジトリのオーナー名
    * @param name リポジトリ名
-   * @param prCount 取得するPRの数（デフォルト10件）
+   * @param prCount 取得するPRの数（デフォルト30件）
    * @param filesPerPR 各PRで取得する変更ファイル数（デフォルト20件）
+   * @param daysAgo 何日前までのPRを取得するか（デフォルト7日間）
    * @returns リポジトリ情報とPR詳細情報
    */
-  async getRepositoryPullRequests(
+  async getRecentRepositoryPullRequests(
     owner: string,
     name: string,
-    prCount = 10,
+    prCount = 30,
     filesPerPR = 20,
+    daysAgo = 7,
   ): Promise<RepositoryInfo | null> {
+    // 現在の日時から指定日数前の日時を計算
+    const today = new Date();
+    const pastDate = new Date(today);
+    pastDate.setDate(today.getDate() - daysAgo);
+
+    // マージ済みPRを十分な数取得するために、より多くのPRを取得
+    const fetchCount = prCount * 2; // 安全のため2倍の数を取得
+
     const query = gql`
-      query GetRepositoryPullRequests(
-        $owner: String!,
-        $name: String!,
-        $prCount: Int!,
-        $filesPerPR: Int!
+  query GetRepositoryPullRequests(
+    $owner: String!,
+    $name: String!,
+    $fetchCount: Int!,
+    $filesPerPR: Int!
+  ) {
+    repository(owner: $owner, name: $name) {
+      id
+      name
+      description
+      url
+      stargazerCount
+      forkCount
+      updatedAt
+      defaultBranchRef {
+        name
+      }
+      primaryLanguage {
+        name
+        color
+      }
+      pullRequests(
+        first: $fetchCount,
+        states: [MERGED],
+        orderBy: { field: UPDATED_AT, direction: DESC }
       ) {
-        repository(owner: $owner, name: $name) {
+        totalCount
+        nodes {
           id
-          name
-          description
+          number
+          title
+          body  # ← PRの説明
           url
-          stargazerCount
-          forkCount
+          state
+          createdAt
           updatedAt
-          defaultBranchRef {
-            name
+          mergedAt
+          additions
+          deletions
+          changedFiles
+          baseRefName
+          headRefName
+          labels(first: 10) {
+            nodes {
+              name
+              color
+            }
           }
-          primaryLanguage {
-            name
-            color
+          author {
+            login
+            avatarUrl
           }
-          pullRequests(
-            first: $prCount,
-            states: [MERGED],
-            orderBy: { field: CREATED_AT, direction: DESC }
-          ) {
+          comments(first: 5) { # ← コメント取得（最大5件）
             totalCount
             nodes {
-              id
-              number
-              title
-              url
-              state
-              createdAt
-              updatedAt
-              mergedAt
-              additions
-              deletions
-              changedFiles
-              baseRefName
-              headRefName
-              labels(first: 10) {
-                nodes {
-                  name
-                  color
-                }
-              }
+              body
               author {
                 login
                 avatarUrl
               }
-              comments {
-                totalCount
-              }
-              reviews {
-                totalCount
-              }
-              commits {
-                totalCount
-              }
-              files(first: $filesPerPR) {
-                nodes {
-                  path
-                  additions
-                  deletions
-                  changeType
-                }
-              }
-              mergeCommit {
-                message
-                oid
+            }
+          }
+          reviews(first: 5) { # ← レビュー取得（最大5件）
+            totalCount
+            nodes {
+              state
+              body
+              author {
+                login
+                avatarUrl
               }
             }
           }
+          commits {
+            totalCount
+          }
+          files(first: $filesPerPR) {
+            nodes {
+              path
+              additions
+              deletions
+              changeType
+            }
+          }
+          mergeCommit {
+            message
+            oid
+          }
         }
       }
-    `;
+    }
+  }
+`;
 
     try {
       const result = await this.client.query({
@@ -178,11 +211,25 @@ export class RepositoryService {
         variables: {
           owner,
           name,
-          prCount,
+          fetchCount,
           filesPerPR,
         },
       });
 
+      // 上書きするため、structuredCloneを作成
+      const repository = structuredClone(result.data.repository);
+
+      if (repository?.pullRequests?.nodes) {
+        const filteredPRs = repository.pullRequests.nodes.filter(
+          (pr: PullRequestInfo) => pr.mergedAt && new Date(pr.mergedAt) >= pastDate,
+        );
+
+        const limitedPRs = filteredPRs.slice(0, prCount);
+
+        // コピーしたオブジェクトのプロパティを更新
+        repository.pullRequests.nodes = limitedPRs;
+        repository.pullRequests.totalCount = limitedPRs.length;
+      }
       return result.data.repository as RepositoryInfo;
     } catch (error) {
       console.error('Error fetching repository pull requests:', error);
