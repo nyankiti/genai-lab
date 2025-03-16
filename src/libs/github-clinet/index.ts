@@ -27,19 +27,19 @@ export class GithubClient {
   }
 
   /**
-   * リポジトリの情報と直近のマージ済みPRの詳細情報を取得する
+   * 直近1週間のマージ済みPRの詳細情報を取得する
    * @param owner リポジトリのオーナー名
    * @param name リポジトリ名
    * @param prCount 取得するPRの数（デフォルト10件）
    * @param daysAgo 何日前までのPRを取得するか（デフォルト7日間）
    * @returns リポジトリ情報とPR詳細情報
    */
-  async getRepositoryPullRequests(
+  async getMergedPRsLastWeek(
     owner: string,
     name: string,
     prCount = 10,
     daysAgo = 7,
   ): Promise<RepositoryInfo | null> {
-    return this.repositoryService.getRecentRepositoryPullRequests(owner, name, prCount, daysAgo);
+    return this.repositoryService.getMergedPRsLastWeek(owner, name, prCount, daysAgo);
   }
 }

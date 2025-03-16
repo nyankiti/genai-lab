@@ -5,9 +5,7 @@ export interface RepositoryInfo {
   name: string;
   description: string | null;
   url: string;
-  updatedAt: string;
   pullRequests: {
-    totalCount: number;
     nodes: Array<PullRequestInfo>;
   };
 }
@@ -16,7 +14,6 @@ export interface PullRequestInfo {
   title: string;
   body: string;
   url: string;
-  state: string;
   mergedAt: string;
   additions: number;
   deletions: number;
@@ -33,17 +30,10 @@ export interface PullRequestInfo {
   reviews: {
     totalCount: number;
     nodes: Array<{
-      state: string; // APPROVED, CHANGES_REQUESTED, COMMENTED など
       body: string;
-      author: {
-        login: string;
-      } | null;
       comments: {
         nodes: Array<{
           body: string;
-          author: {
-            login: string;
-          } | null;
         }>;
       };
     }>;
@@ -62,7 +52,7 @@ export class RepositoryService {
    * @param daysAgo 何日前までのPRを取得するか（デフォルト7日間）
    * @returns リポジトリ情報とPR詳細情報
    */
-  async getRecentRepositoryPullRequests(
+  async getMergedPRsLastWeek(
     owner: string,
     name: string,
     prCount = 10,
@@ -86,19 +76,16 @@ export class RepositoryService {
       name
       description
       url
-      updatedAt
       pullRequests(
         first: $fetchCount,
         states: [MERGED],
         orderBy: { field: UPDATED_AT, direction: DESC }
       ) {
-        totalCount
         nodes {
           number
           title
           body  # ← PRの説明
           url
-          state
           mergedAt
           additions
           deletions
@@ -117,17 +104,10 @@ export class RepositoryService {
           reviews(first: 5) { # ← レビュー取得（最大5件）
             totalCount
             nodes {
-              state
               body
-              author {
-                login
-              }
               comments(first: 5) {
                 nodes {
                   body
-                  author {
-                    login
-                  }
                 }
               }
             }
