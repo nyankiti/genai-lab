@@ -4,6 +4,7 @@ import {
   ListToolsRequestSchema,
   type Tool,
 } from '@modelcontextprotocol/sdk/types.js';
+import type { GithubClient } from 'libs/github-clinet';
 
 // Toolsの定義
 const TOOLS: Record<string, Tool> = {
@@ -25,7 +26,7 @@ const TOOLS: Record<string, Tool> = {
   },
 };
 
-export const setupToolHandlers = (mcpServer: Server) => {
+export const setupToolHandlers = (mcpServer: Server, githubClient: GithubClient) => {
   mcpServer.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: Object.values(TOOLS),
   }));
@@ -41,12 +42,15 @@ export const setupToolHandlers = (mcpServer: Server) => {
       const name = request.params.arguments?.name as string;
       console.log('owner:', owner);
       console.log('name:', name);
-      // TODO ここでGitHub APIを叩いて結果を返す
+      const repositoryPullRequestsResult = await githubClient.getRepositoryPullRequests(
+        owner,
+        name,
+      );
       return {
         content: [
           {
             type: 'text',
-            text: owner + name,
+            text: JSON.stringify(repositoryPullRequestsResult),
           },
         ],
       };

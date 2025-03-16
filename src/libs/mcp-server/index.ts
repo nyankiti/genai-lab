@@ -1,6 +1,7 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
+import { GithubClient } from 'libs/github-clinet';
 import { setupPromptHandlers } from './prompts';
 import { setupToolHandlers } from './tools';
 
@@ -16,11 +17,12 @@ const mcpServer = new Server(
     },
   },
 );
+const githubClinet = new GithubClient();
 
 console.error('my MCP Server starting...');
 
 setupPromptHandlers(mcpServer);
-setupToolHandlers(mcpServer);
+setupToolHandlers(mcpServer, githubClinet);
 // TODO 必要に応じてResourceHandlerも実装する
 
 console.error('my MCP Server started');
