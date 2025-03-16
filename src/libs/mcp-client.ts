@@ -72,7 +72,7 @@ export class MyMCPClient {
     this.availableTools = listToolsResponse.tools;
   }
 
-  async processQueryByQroq(query: string): Promise<string | null | undefined> {
+  async processQuery(query: string): Promise<string | null | undefined> {
     const messages: Array<GroqChatCompletionMessageParam & { name?: string }> = [
       { role: 'user', content: query },
     ];
@@ -96,7 +96,6 @@ export class MyMCPClient {
     const responseMessage = response.choices[0].message;
     const toolCalls = responseMessage.tool_calls;
     if (toolCalls) {
-      messages.push(responseMessage);
       messages.push(responseMessage);
       for (const toolCall of toolCalls.slice(0, 1)) {
         const toolName = toolCall.function.name;
@@ -130,8 +129,6 @@ export class MyMCPClient {
           content: toolResultContents,
         });
       }
-      console.log('message');
-      console.dir(messages, { depth: null });
       const secondResponse = await this.groqClient.chat.completions.create({
         model: MODEL_NAME,
         messages: messages,
@@ -141,7 +138,15 @@ export class MyMCPClient {
     return responseMessage.content;
   }
 
-  async processQuery(query: string): Promise<string> {
+  /**
+   * memo: openaiのAPIを利用すると以下のようにエラーしてしまう
+   * ```
+   * error: {
+   *  message: "'messages.2' : for 'role:tool' the following must be satisfied[('messages.2.content' : value must be a string)]",
+   *  type: 'invalid_request_error'
+   * },
+   */
+  async processQueryByOpenAIClient(query: string): Promise<string> {
     const messages: Array<ChatCompletionMessageParam & { name?: string }> = [
       { role: 'user', content: query },
     ];
@@ -154,9 +159,6 @@ export class MyMCPClient {
       },
     }));
 
-    console.log('before first chat call messages');
-    console.log(messages);
-
     const response = await this.openaiClient.chat.completions.create({
       model: MODEL_NAME,
       max_tokens: MAX_TOKENS,
@@ -164,29 +166,23 @@ export class MyMCPClient {
       stream: false,
       tools: availableTools,
       tool_choice: 'required',
+      max_completion_tokens: 4096,
     });
-
-    // const message = response.choices[0].message;
 
     const reasoningMessage = response.choices[0].message;
     const toolCalls = reasoningMessage.tool_calls;
 
     // tool callsがない場合はreasoningMessageに通常の回答が入っている
-    if (!toolCalls) {
-      return reasoningMessage.content ?? '';
-    }
+    if (!toolCalls) return reasoningMessage.content ?? '';
 
-    const finalText: string[] = [];
     messages.push(reasoningMessage);
 
     for (const toolCall of toolCalls) {
       const toolName = toolCall.function.name;
-      const toolCallId = toolCall.id;
       const toolArgs = JSON.parse(toolCall.function.arguments);
-      // const schema = this.availableTools.find(tool => tool.name === toolName)?.inputSchema;
-
       // FOR DEBUG
-      console.log('Calling tool:', toolName, toolArgs, toolCallId);
+      console.log('Calling tool:', toolName, toolArgs, toolCall.id);
+
       const toolResult = await this.mcpClient.request(
         {
           method: 'tools/call',
@@ -203,15 +199,11 @@ export class MyMCPClient {
       console.log('Tool call result:', toolResult);
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       const toolResultContents = toolResult.content.map((content: any) => {
-        // FIXME: ここがstringではなくobjectを期待されているっぽい？
         if (content.type === 'text') return content.text;
         throw Error(`content type not supported: ${content.type}, ${content}`);
       });
-
-      finalText.push(`[Calling tool ${toolName} with args ${JSON.stringify(toolArgs)}]`);
-
       messages.push({
-        tool_call_id: toolCallId,
+        tool_call_id: toolCall.id,
         role: 'tool' as const,
         name: toolName,
         content: toolResultContents,
@@ -223,21 +215,9 @@ export class MyMCPClient {
 
     const followUpResponse = await this.openaiClient.chat.completions.create({
       model: MODEL_NAME,
-      max_tokens: MAX_TOKENS,
       messages,
-      tools: availableTools,
-      tool_choice: 'auto',
-      max_completion_tokens: 4096,
-      response_format: {
-        type: 'text',
-      },
-      temperature: 0.6,
     });
-
-    if (!followUpResponse.choices[0].message.content) throw Error('message not found');
-    finalText.push(followUpResponse.choices[0].message.content);
-
-    return finalText.join('\n');
+    return followUpResponse.choices[0].message.content ?? '';
   }
 
   async mcpToolCallTest(): Promise<void> {
