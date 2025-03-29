@@ -1,3 +1,4 @@
+import * as cheerio from 'cheerio';
 import Parser from 'rss-parser';
 import { WATCHING_TECH_SITES_FRONTEND } from './constant';
 
@@ -29,6 +30,24 @@ class TechFeed {
         'entries:',
         entries.map((entry) => entry.link),
       );
+      for (const entry of entries) {
+        const article = await this.retrieveArticle(entry.link, site.siteName);
+        if (!article) continue;
+        console.log('article:', article);
+      }
+    }
+  }
+
+  async retrieveArticle(url: string, feedName: string): Promise<Article | null> {
+    try {
+      const response = await fetch(url);
+      const html = await response.text();
+      const $ = cheerio.load(html);
+      const text = $('main').find('p, code, ul, h1, h2, h3, h4, h5, h6').text();
+      return { feedName, title: $('title').text(), url, text };
+    } catch (error) {
+      console.error(`Failed to fetch article: ${error}`);
+      return null;
     }
   }
 
@@ -57,7 +76,12 @@ class TechFeed {
       // [memo] parser.parseURLだと、User-Agentの付与がうまくいかず、一部feedで403となってしまうため、fetchで取得してからparseStringする
       feed = await parser.parseString(text);
     } catch {
-      feed = await parser.parseURL(feedUrl);
+      try {
+        feed = await parser.parseURL(feedUrl);
+      } catch (e) {
+        console.error(`Failed to parse RSS feed: ${e}`);
+        return null;
+      }
     }
 
     if (!feed || !feed.items) {

@@ -7,6 +7,16 @@ type SiteMetadata = {
   siteDescription: string;
 };
 
+export const TEST_WATCHING_TECH_SITES_FRONTEND: SiteMetadata[] = [
+  {
+    siteName: 'Baeldung',
+    feedType: 'browserFriendlyFeed',
+    feedUrl: 'https://feeds.feedblitz.com/baeldung',
+    siteDescription:
+      'Java、Springに関する技術記事が豊富。チュートリアル形式の解説が多く、実践的な知識を得られる。',
+  },
+];
+
 export const WATCHING_TECH_SITES_FRONTEND: SiteMetadata[] = [
   {
     siteName: "Josh W Comeau's Blog",
