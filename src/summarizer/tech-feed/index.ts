@@ -1,6 +1,9 @@
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 import * as cheerio from 'cheerio';
 import Parser from 'rss-parser';
-import { WATCHING_TECH_SITES_FRONTEND } from './constant';
+import { TEST_WATCHING_TECH_SITES_FRONTEND, WATCHING_TECH_SITES_FRONTEND } from './constant';
 
 type Article = {
   feedName: string;
@@ -10,10 +13,12 @@ type Article = {
   summary?: string;
 };
 
+const repoRoot = execSync('git rev-parse --show-toplevel').toString().trim();
+
 const CONFIG = {
   techFeedMaxEntriesPerDay: 10,
-  outputPath: 'tech_feed/{date}.md',
-  thresholdDays: 7,
+  outputPath: path.join(repoRoot, `output/tech_feed/${new Date().toISOString().split('T')[0]}.md`),
+  thresholdDays: 2,
 };
 
 class TechFeed {
@@ -23,7 +28,7 @@ class TechFeed {
     const markdowns: string[] = [];
 
     const parser = new Parser();
-    for (const site of WATCHING_TECH_SITES_FRONTEND) {
+    for (const site of TEST_WATCHING_TECH_SITES_FRONTEND) {
       const entries = await this.parseFeedAndExtractTargetEntries(site.feedUrl, parser);
       if (!entries) continue;
       console.log(
@@ -34,8 +39,29 @@ class TechFeed {
         const article = await this.retrieveArticle(entry.link, site.siteName);
         if (!article) continue;
         console.log('article:', article);
+        article.summary = await this.summarizeArticle(article);
+        console.log(`Summarized article: ${article.title}`);
+        markdowns.push(this.stylizeArticle(article));
       }
+      await new Promise((res) => setTimeout(res, 1000));
     }
+    this.storeSummaries(markdowns);
+  }
+
+  storeSummaries(summaries: string[]) {
+    fs.mkdirSync(path.dirname(CONFIG.outputPath), { recursive: true });
+    fs.writeFileSync(CONFIG.outputPath, summaries.join('\n---\n'), 'utf-8');
+    console.log(`Saved summaries to ${CONFIG.outputPath}`);
+  }
+
+  stylizeArticle(article: Article): string {
+    return `# ${article.title}\n\n[View on ${article.feedName}](${article.url})\n\n${article.summary}`;
+  }
+
+  async summarizeArticle(article: Article): Promise<string> {
+    // [memo] ここではダミーの要約を返す
+    // 実際には、要約生成のロジックを実装する必要があります。
+    return `Summary of ${article.title}`;
   }
 
   async retrieveArticle(url: string, feedName: string): Promise<Article | null> {
@@ -43,7 +69,10 @@ class TechFeed {
       const response = await fetch(url);
       const html = await response.text();
       const $ = cheerio.load(html);
-      const text = $('main').find('p, code, ul, h1, h2, h3, h4, h5, h6').text();
+      let text = $('main').find('p, code, ul, h1, h2, h3, h4, h5, h6').text();
+      if (text.length < 10) {
+        text = $('article').find('p, code, ul, h1, h2, h3, h4, h5, h6').text();
+      }
       return { feedName, title: $('title').text(), url, text };
     } catch (error) {
       console.error(`Failed to fetch article: ${error}`);
