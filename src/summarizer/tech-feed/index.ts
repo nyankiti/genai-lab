@@ -4,7 +4,7 @@ import * as cheerio from 'cheerio';
 import dotenv from 'dotenv';
 import Parser from 'rss-parser';
 
-import { todaysDateString } from 'libs/date';
+import { getDateString } from 'libs/date';
 import { repoRoot } from 'libs/file';
 import { GeminiClient } from 'libs/gemini-client';
 import { WATCHING_TECH_SITES_FRONTEND } from './constant';
@@ -23,21 +23,30 @@ export const generatedSummariesDir = () => path.join(repoRoot, 'generated_summar
 
 const CONFIG = {
   techFeedMaxEntriesPerDay: 10,
-  outputPath: path.join(generatedSummariesDir(), `${todaysDateString()}.md`),
   thresholdDays: 2,
 };
 
 export class TechFeed {
+  private targetDate: Date;
   private threshold: Date;
   private parser: Parser;
   private geminiClient: GeminiClient;
 
-  constructor() {
-    this.threshold = new Date(Date.now() - CONFIG.thresholdDays * 86400000);
+  constructor(targetDate: Date) {
+    this.targetDate = targetDate;
+    this.threshold = new Date(targetDate.getTime() - CONFIG.thresholdDays * 86400000);
     this.parser = new Parser();
     this.geminiClient = new GeminiClient();
   }
   async run() {
+    const outputPath = path.join(generatedSummariesDir(), `${getDateString(this.targetDate)}.md`);
+
+    // すでにファイルが存在する場合は、何もしない
+    if (fs.existsSync(outputPath)) {
+      console.log(`File already exists: ${outputPath}`);
+      return;
+    }
+
     const markdowns: string[] = [];
 
     for (const site of WATCHING_TECH_SITES_FRONTEND) {
@@ -55,13 +64,10 @@ export class TechFeed {
       }
       await new Promise((res) => setTimeout(res, 1000));
     }
-    this.storeSummaries(markdowns);
-  }
 
-  storeSummaries(summaries: string[]) {
-    fs.mkdirSync(path.dirname(CONFIG.outputPath), { recursive: true });
-    fs.writeFileSync(CONFIG.outputPath, summaries.join('\n---\n'), 'utf-8');
-    console.log(`Saved summaries to ${CONFIG.outputPath}`);
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(outputPath, markdowns.join('\n---\n'), 'utf-8');
+    console.log(`Saved summaries to ${outputPath}`);
   }
 
   stylizeArticle(article: Article): string {
@@ -128,7 +134,12 @@ export class TechFeed {
       return null;
     }
     const entries = feed.items
-      .filter((entry) => entry.pubDate && new Date(entry.pubDate) > this.threshold)
+      .filter(
+        (entry) =>
+          entry.pubDate &&
+          new Date(entry.pubDate) > this.threshold &&
+          new Date(entry.pubDate) <= this.targetDate,
+      )
       .slice(0, CONFIG.techFeedMaxEntriesPerDay);
 
     return entries;
