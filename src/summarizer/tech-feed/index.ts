@@ -7,7 +7,7 @@ import Parser from 'rss-parser';
 import { todaysDateString } from 'libs/date';
 import { repoRoot } from 'libs/file';
 import { GeminiClient } from 'libs/gemini-client';
-import { TEST_WATCHING_TECH_SITES_FRONTEND } from './constant';
+import { WATCHING_TECH_SITES_FRONTEND } from './constant';
 
 dotenv.config();
 
@@ -19,12 +19,11 @@ type Article = {
   summary?: string;
 };
 
-export const todaysTechFeedPath = () =>
-  path.join(repoRoot, `output/tech_feed/${todaysDateString()}.md`);
+export const generatedSummariesDir = () => path.join(repoRoot, 'generated_summaries');
 
 const CONFIG = {
   techFeedMaxEntriesPerDay: 10,
-  outputPath: todaysTechFeedPath(),
+  outputPath: path.join(generatedSummariesDir(), `${todaysDateString()}.md`),
   thresholdDays: 2,
 };
 
@@ -41,7 +40,7 @@ export class TechFeed {
   async run() {
     const markdowns: string[] = [];
 
-    for (const site of TEST_WATCHING_TECH_SITES_FRONTEND) {
+    for (const site of WATCHING_TECH_SITES_FRONTEND) {
       const entries = await this.parseFeedAndExtractTargetEntries(site.feedUrl);
       if (!entries) continue;
       console.log(
@@ -51,9 +50,7 @@ export class TechFeed {
       for (const entry of entries) {
         const article = await this.retrieveArticle(entry.link, site.siteName);
         if (!article) continue;
-        console.log('article:', article);
         article.summary = await this.summarizeArticle(article);
-        console.log(`Summarized article: ${article.title}`);
         markdowns.push(this.stylizeArticle(article));
       }
       await new Promise((res) => setTimeout(res, 1000));
