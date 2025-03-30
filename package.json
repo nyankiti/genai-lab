@@ -5,7 +5,9 @@
   "scripts": {
     "build": "tsc",
     "mcpApp": "tsx src/mcpApp.ts",
-    "format": "biome check --write ."
+    "format": "biome check --write .",
+    "generatePagesArtifact": "tsx src/generatePagesArtifact.ts",
+    "generateSummaries": "tsx src/summarizer"
   },
   "packageManager": "pnpm@10.6.3",
   "devDependencies": {

@@ -1,12 +1,13 @@
-import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import * as cheerio from 'cheerio';
 import dotenv from 'dotenv';
 import Parser from 'rss-parser';
 
+import { todaysDateString } from 'libs/date';
+import { repoRoot } from 'libs/file';
 import { GeminiClient } from 'libs/gemini-client';
-import { TEST_WATCHING_TECH_SITES_FRONTEND, WATCHING_TECH_SITES_FRONTEND } from './constant';
+import { TEST_WATCHING_TECH_SITES_FRONTEND } from './constant';
 
 dotenv.config();
 
@@ -18,15 +19,16 @@ type Article = {
   summary?: string;
 };
 
-const repoRoot = execSync('git rev-parse --show-toplevel').toString().trim();
+export const todaysTechFeedPath = () =>
+  path.join(repoRoot, `output/tech_feed/${todaysDateString()}.md`);
 
 const CONFIG = {
   techFeedMaxEntriesPerDay: 10,
-  outputPath: path.join(repoRoot, `output/tech_feed/${new Date().toISOString().split('T')[0]}.md`),
+  outputPath: todaysTechFeedPath(),
   thresholdDays: 2,
 };
 
-class TechFeed {
+export class TechFeed {
   private threshold: Date;
   private parser: Parser;
   private geminiClient: GeminiClient;
@@ -135,8 +137,3 @@ class TechFeed {
     return entries;
   }
 }
-
-(async () => {
-  const techFeed = new TechFeed();
-  await techFeed.run();
-})();
