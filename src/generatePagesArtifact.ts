@@ -5,16 +5,19 @@ import { distDir } from 'libs/file';
 import { generatedSummariesDir } from 'summarizer/tech-feed';
 
 const generateSummariesJson = async () => {
-  const summaryFiles = await readdir(generatedSummariesDir());
-  const slugs = summaryFiles.map((file) => path.basename(file, path.extname(file)));
+  const summaryDirs = await readdir(generatedSummariesDir());
 
-  for (const slug of slugs) {
-    const todaysTechFeedPath = path.join(generatedSummariesDir(), `${slug}.md`);
+  for (const dateStringDir of summaryDirs) {
+    const summaryFiles = await readdir(path.join(generatedSummariesDir(), dateStringDir));
     const summaryJson: Record<string, string> = {};
-    const fileContent = await readFile(todaysTechFeedPath, 'utf-8');
-    summaryJson['tech-feed'] = fileContent;
 
-    const targetPath = path.join(distDir, slug, 'summaries.json');
+    for (const fileName of summaryFiles) {
+      const targetSummryPath = path.join(generatedSummariesDir(), dateStringDir, fileName);
+      const fileContent = await readFile(targetSummryPath, 'utf-8');
+      // tech-feed, redditなど
+      summaryJson[fileName] = fileContent;
+    }
+    const targetPath = path.join(distDir, 'summary', `${dateStringDir}.json`);
     await mkdir(path.dirname(targetPath), { recursive: true });
     await writeFile(targetPath, JSON.stringify(summaryJson, null, 2), 'utf-8');
     console.log(`✅ Summaries JSON generated at ${targetPath}`);

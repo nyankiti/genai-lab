@@ -39,9 +39,12 @@ export class TechFeed {
     this.geminiClient = new GeminiClient();
   }
   async run() {
-    const outputPath = path.join(generatedSummariesDir(), `${getDateString(this.targetDate)}.md`);
+    const outputPath = path.join(
+      generatedSummariesDir(),
+      getDateString(this.targetDate),
+      'tech-feed.md',
+    ); // /generated_summaries/{dateString}/tech-feed.md に保存する
 
-    // すでにファイルが存在する場合は、何もしない
     if (fs.existsSync(outputPath)) {
       console.log(`File already exists: ${outputPath}`);
       return;
