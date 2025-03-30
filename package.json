@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.13.4",
+    "@google/generative-ai": "^0.24.0",
     "@modelcontextprotocol/sdk": "^1.7.0",
     "@modelcontextprotocol/server-github": "^2025.1.23",
     "cheerio": "^1.0.0",

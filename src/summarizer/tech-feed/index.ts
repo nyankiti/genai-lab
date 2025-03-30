@@ -2,8 +2,13 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import * as cheerio from 'cheerio';
+import dotenv from 'dotenv';
 import Parser from 'rss-parser';
+
+import { GeminiClient } from 'libs/gemini-client';
 import { TEST_WATCHING_TECH_SITES_FRONTEND, WATCHING_TECH_SITES_FRONTEND } from './constant';
+
+dotenv.config();
 
 type Article = {
   feedName: string;
@@ -22,14 +27,20 @@ const CONFIG = {
 };
 
 class TechFeed {
-  private threshold = new Date(Date.now() - CONFIG.thresholdDays * 86400000);
+  private threshold: Date;
+  private parser: Parser;
+  private geminiClient: GeminiClient;
 
+  constructor() {
+    this.threshold = new Date(Date.now() - CONFIG.thresholdDays * 86400000);
+    this.parser = new Parser();
+    this.geminiClient = new GeminiClient();
+  }
   async run() {
     const markdowns: string[] = [];
 
-    const parser = new Parser();
     for (const site of TEST_WATCHING_TECH_SITES_FRONTEND) {
-      const entries = await this.parseFeedAndExtractTargetEntries(site.feedUrl, parser);
+      const entries = await this.parseFeedAndExtractTargetEntries(site.feedUrl);
       if (!entries) continue;
       console.log(
         'entries:',
@@ -59,9 +70,10 @@ class TechFeed {
   }
 
   async summarizeArticle(article: Article): Promise<string> {
-    // [memo] ここではダミーの要約を返す
-    // 実際には、要約生成のロジックを実装する必要があります。
-    return `Summary of ${article.title}`;
+    return this.geminiClient.generateContent(
+      `\n${article.title}\n\n本文:\n${article.text}`,
+      '与えられた記事のタイトルと本文を元に詳細な要約を日本語で作成してください。',
+    );
   }
 
   async retrieveArticle(url: string, feedName: string): Promise<Article | null> {
@@ -82,7 +94,6 @@ class TechFeed {
 
   async parseFeedAndExtractTargetEntries(
     feedUrl: string,
-    parser: Parser,
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   ): Promise<{ [key: string]: any }[] | null> {
     // biome-ignore lint/suspicious/noImplicitAnyLet: <explanation>
@@ -103,10 +114,10 @@ class TechFeed {
 
       const text = await response.text();
       // [memo] parser.parseURLだと、User-Agentの付与がうまくいかず、一部feedで403となってしまうため、fetchで取得してからparseStringする
-      feed = await parser.parseString(text);
+      feed = await this.parser.parseString(text);
     } catch {
       try {
-        feed = await parser.parseURL(feedUrl);
+        feed = await this.parser.parseURL(feedUrl);
       } catch (e) {
         console.error(`Failed to parse RSS feed: ${e}`);
         return null;
