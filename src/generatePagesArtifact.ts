@@ -24,6 +24,18 @@ const generateSummariesJson = async () => {
   }
 };
 
+/**
+ * summaryが存在する日付を確認するためのsummariesList.jsonを生成する
+ */
+export const generateSummariesListJson = async () => {
+  const summaryFiles = await readdir(path.join(distDir, 'summary'));
+  const summaryList = summaryFiles.map((file) => path.parse(file).name);
+  const targetPath = path.join(distDir, 'summary', 'list.json');
+  await writeFile(targetPath, JSON.stringify(summaryList, null, 2), 'utf-8');
+  console.log(`✅ Summaries list JSON generated at ${targetPath}`);
+};
+
 (async () => {
   await generateSummariesJson();
+  await generateSummariesListJson();
 })();
