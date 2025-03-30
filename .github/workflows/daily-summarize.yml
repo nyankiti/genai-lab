@@ -3,7 +3,7 @@ name: Summarize Watching Contents and Build and Deploy to Github Pages
 on:
   push:
     branches:
-      - summarizer # TODO: for debug
+      - main # TODO: for debug
   schedule:
     - cron: "0 9 * * *" # 毎日 9時 に実行
 
