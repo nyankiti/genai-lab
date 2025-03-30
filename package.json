@@ -5,7 +5,9 @@
   "scripts": {
     "build": "tsc",
     "mcpApp": "tsx src/mcpApp.ts",
-    "format": "biome check --write ."
+    "format": "biome check --write .",
+    "generatePagesArtifact": "tsx src/generatePagesArtifact.ts",
+    "generateSummaries": "tsx src/summarizer"
   },
   "packageManager": "pnpm@10.6.3",
   "devDependencies": {
@@ -16,11 +18,14 @@
   },
   "dependencies": {
     "@apollo/client": "^3.13.4",
+    "@google/generative-ai": "^0.24.0",
     "@modelcontextprotocol/sdk": "^1.7.0",
     "@modelcontextprotocol/server-github": "^2025.1.23",
+    "cheerio": "^1.0.0",
     "dotenv": "^16.4.7",
     "groq-sdk": "^0.16.0",
     "openai": "^4.87.3",
+    "rss-parser": "^3.13.0",
     "zod": "^3.24.2"
   }
 }
