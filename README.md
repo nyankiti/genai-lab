@@ -3,8 +3,10 @@
 ## setup
 ```
 pnpm install
-pnpm exec playwright install chromium --with-deps
 ```
+
+### redditのaccess token生成
+[こちらの記事](https://www.geeksnipe.com/article/546)を参考に https://not-an-aardvark.github.io/reddit-oauth-helper/ を用いて生成
 
 ## Tech情報要約機能
 海外Techブログやraddit, hacker newsなどを日次で日本語要約を実施し、以下のパスに保存する
