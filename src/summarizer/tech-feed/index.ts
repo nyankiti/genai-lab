@@ -116,7 +116,10 @@ export class TechFeed {
         },
       });
       if (!response.ok) {
-        console.error(`Failed to fetch RSS: ${response.status}`);
+        const errorText = await response.text();
+        console.error(
+          `Failed to fetch RSS: ${response.status} ${response.statusText}\nResponse: ${errorText}`,
+        );
         return null;
       }
 

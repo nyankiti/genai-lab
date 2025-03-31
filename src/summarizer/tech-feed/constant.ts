@@ -38,13 +38,13 @@ export const WATCHING_TECH_SITES_FRONTEND: SiteMetadata[] = [
     siteDescription:
       'tRPCの開発者であるTheo氏のブログ。TypeScript、Next.js、バックエンド開発に関する記事が多い。',
   },
-  {
-    siteName: 'Baeldung',
-    feedType: 'browserFriendlyFeed',
-    feedUrl: 'https://feeds.feedblitz.com/baeldung',
-    siteDescription:
-      'Java、Springに関する技術記事が豊富。チュートリアル形式の解説が多く、実践的な知識を得られる。',
-  },
+  // {
+  //   siteName: 'Baeldung',
+  //   feedType: 'browserFriendlyFeed',
+  //   feedUrl: 'https://feeds.feedblitz.com/baeldung',
+  //   siteDescription:
+  //     'Java、Springに関する技術記事が豊富。チュートリアル形式の解説が多く、実践的な知識を得られる。',
+  // },
   {
     siteName: 'Spring Blog',
     feedType: 'atom',

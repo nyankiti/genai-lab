@@ -83,3 +83,32 @@
 *   記事で紹介されたコード例は GitHub で公開されている。
 
 この記事は、GitHub-API ライブラリを使用して、Java アプリケーションから GitHub API を操作するための基礎的な知識を提供します。
+
+
+---
+
+# Mutation Testing in Rust
+
+[View on A Java geek Nicolas Fränkel's blog](https://blog.frankel.ch/mutation-testing-rust/)
+
+## RustにおけるMutation Testing：cargo-mutants を試す
+
+この記事は、著者がRustでMutation Testingを試した経験について述べています。Mutation Testingとは、コードに意図的に小さな変更（変異）を加え、テストがその変更を検出できるかどうかを確認することで、テストの品質を評価する手法です。
+
+著者は、RustでMutation Testingを行うためのツールとして `cargo-mutants` と `mutagen` の2つのクレートを見つけました。`mutagen` はメンテナンスされていないため、活発に開発されている `cargo-mutants` を選択しました。
+
+記事では、簡単な `LowPassPredicate` という構造体とそのテストコードを例に、`cargo-mutants` の使用方法を説明しています。初期状態では、`cargo-mutants` が期待される変異（境界値テストの欠如によって生き残る変異）を検出できなかったため、著者は `cargo-mutants` のソースコードを調査しました。
+
+その結果、`cargo-mutants` が演算子の変異を扱う箇所で、`<` を `<=` に、`>` を `>=` に変異させていないことを発見しました。そこで、著者はリポジトリをフォークし、コードを修正してローカルにインストールしました。
+
+修正後、`cargo-mutants` を再度実行すると、期待通りに変異が検出されました。しかし、修正したコードを `cargo-mutants` のリポジトリにPull Requestとして提出する際に問題が発生しました。テストがパスせず、リポジトリのメンテナの助けを借りて問題を解決し、最終的にPull Requestがマージされました。
+
+著者はこの経験を通して、`cargo-mutants` についてより深く理解し、コードの改善に貢献することができました。記事は、Mutation Testingの重要性と、`cargo-mutants` の使用方法、そしてオープンソースプロジェクトへの貢献について述べています。
+
+**要約のポイント:**
+
+*   **Mutation Testingとは：** コードのテスト品質を評価する手法
+*   **利用したツール：** `cargo-mutants` （RustのMutation Testingツール）
+*   **課題：** `cargo-mutants` が期待される変異を検出できなかった
+*   **解決策：** ソースコードを修正し、Pull Requestを提出
+*   **成果：** `cargo-mutants` の改善に貢献し、Mutation Testingへの理解を深めた
