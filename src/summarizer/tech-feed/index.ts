@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import Parser from 'rss-parser';
 
 import { getDateString } from 'libs/date';
+import { fetchRssWithFallback } from 'libs/fetchWithFallback';
 import { repoRoot } from 'libs/file';
 import { GeminiClient } from 'libs/gemini-client';
 import { WATCHING_TECH_SITES_FRONTEND } from './constant';
@@ -108,36 +109,7 @@ export class TechFeed {
     feedUrl: string,
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   ): Promise<{ [key: string]: any }[] | null> {
-    // biome-ignore lint/suspicious/noImplicitAnyLet: <explanation>
-    let feed;
-    try {
-      const response = await fetch(feedUrl, {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-          Referer: 'https://www.google.com/',
-          Accept: 'application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8',
-        },
-      });
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(
-          `Failed to fetch RSS: ${response.status} ${response.statusText}\nResponse: ${errorText}`,
-        );
-        throw new Error('Failed to fetch RSS');
-      }
-
-      const text = await response.text();
-      // [memo] parser.parseURLだと、User-Agentの付与がうまくいかず、一部feedで403となってしまうため、fetchで取得してからparseStringする
-      feed = await this.parser.parseString(text);
-    } catch {
-      try {
-        feed = await this.parser.parseURL(feedUrl);
-      } catch (e) {
-        console.error(`Failed to parser.parseURL: ${e}`);
-        return null;
-      }
-    }
+    const feed = await fetchRssWithFallback(feedUrl, this.parser);
 
     if (!feed || !feed.items) {
       console.error('Failed to parse RSS feed');
