@@ -5,7 +5,7 @@ on:
     branches:
       - main # TODO: for debug
   schedule:
-    - cron: "0 9 * * *" # 毎日 9時 に実行
+    - cron: "0 0 * * *" # 毎日9時（JTC）に実行. cronはUTCでしか指定できない
 
 # ワークフローに書き込み権限を与える ref:https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
 permissions:
