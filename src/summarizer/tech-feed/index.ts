@@ -68,6 +68,10 @@ export class TechFeed {
       await new Promise((res) => setTimeout(res, 1000));
     }
 
+    if (markdowns.length === 0) {
+      markdowns.push(`${getDateString(this.targetDate)} の記事はありませんでした。\n\n`);
+    }
+
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, markdowns.join('\n---\n'), 'utf-8');
     console.log(`Saved summaries to ${outputPath}`);
