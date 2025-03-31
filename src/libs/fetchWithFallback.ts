@@ -48,5 +48,21 @@ export const fetchRssWithFallback = async (
     console.error(`Failed to parser.parseURL: ${e}`);
   }
 
+  try {
+    const response = await fetch(`https://sokes-nook.net/api/proxy?url=${feedUrl}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(
+        `Failed to fetch RSS via proxy: ${response.status} ${response.statusText}\nResponse: ${errorText}`,
+      );
+      throw new Error('Failed to fetch RSS via proxy');
+    }
+
+    const text = await response.text();
+    return await parser.parseString(text);
+  } catch (e) {
+    console.error(`Failed to fetch RSS via proxy: ${e}`);
+  }
+
   return null;
 };
