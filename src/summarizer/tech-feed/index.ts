@@ -120,7 +120,7 @@ export class TechFeed {
         console.error(
           `Failed to fetch RSS: ${response.status} ${response.statusText}\nResponse: ${errorText}`,
         );
-        return null;
+        throw new Error('Failed to fetch RSS');
       }
 
       const text = await response.text();
@@ -130,7 +130,7 @@ export class TechFeed {
       try {
         feed = await this.parser.parseURL(feedUrl);
       } catch (e) {
-        console.error(`Failed to parse RSS feed: ${e}`);
+        console.error(`Failed to parser.parseURL: ${e}`);
         return null;
       }
     }
