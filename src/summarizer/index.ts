@@ -1,4 +1,5 @@
 import { getPastDate } from 'libs/date';
+import { RedditExplorer } from './reddit-explorer';
 import { TechFeed } from './tech-feed';
 
 (async () => {
@@ -6,4 +7,7 @@ import { TechFeed } from './tech-feed';
   // const techFeed = new TechFeed(getPastDate(2));
   const techFeed = new TechFeed(new Date());
   await techFeed.run();
+
+  const redditExplorer = new RedditExplorer(new Date());
+  await redditExplorer.run();
 })();

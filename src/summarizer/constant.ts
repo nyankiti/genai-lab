@@ -62,3 +62,5 @@ export const WATCHING_TECH_SITES_FRONTEND: SiteMetadata[] = [
       'OpenAIの最新情報や研究成果を紹介する公式ブログ。AI技術の進展に関する洞察が得られる。',
   },
 ];
+
+export const SUB_REDDITS = ['devops', 'Frontend', 'SpringBoot', 'SQL', 'webdev', 'nextjs'];
