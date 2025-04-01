@@ -6,8 +6,7 @@ import { TechFeed } from './tech-feed';
   // 遡って実行する場合は、getPastDateの引数を変更する
   // const techFeed = new TechFeed(getPastDate(2));
   const techFeed = new TechFeed(new Date());
-  await techFeed.run();
-
   const redditExplorer = new RedditExplorer(new Date());
-  await redditExplorer.run();
+
+  await Promise.all([techFeed.run(), redditExplorer.run()]);
 })();

@@ -5,20 +5,16 @@ import dotenv from 'dotenv';
 import Parser from 'rss-parser';
 
 import { getDateString } from 'libs/date';
-import { fetchRssWithFallback } from 'libs/fetchWithFallback';
+import {
+  type Article,
+  fetchRssWithFallback,
+  retrieveArticleWithFallback,
+} from 'libs/fetchWithFallback';
 import { repoRoot } from 'libs/file';
 import { GeminiClient } from 'libs/gemini-client';
 import { WATCHING_TECH_SITES_FRONTEND } from './constant';
 
 dotenv.config();
-
-type Article = {
-  feedName: string;
-  title: string;
-  url: string;
-  text: string;
-  summary?: string;
-};
 
 export const generatedSummariesDir = () => path.join(repoRoot, 'generated_summaries');
 
@@ -61,7 +57,7 @@ export class TechFeed {
         entries.map((entry) => entry.link),
       );
       for (const entry of entries) {
-        const article = await this.retrieveArticle(entry.link, site.siteName);
+        const article = await retrieveArticleWithFallback(entry.link, site.siteName);
         if (!article) continue;
         article.summary = await this.summarizeArticle(article);
         markdowns.push(this.stylizeArticle(article));
@@ -87,22 +83,6 @@ export class TechFeed {
       `\n${article.title}\n\n本文:\n${article.text}`,
       '与えられた記事のタイトルと本文を元に詳細な要約を日本語で作成してください。',
     );
-  }
-
-  async retrieveArticle(url: string, feedName: string): Promise<Article | null> {
-    try {
-      const response = await fetch(url);
-      const html = await response.text();
-      const $ = cheerio.load(html);
-      let text = $('main').find('p, code, ul, h1, h2, h3, h4, h5, h6').text();
-      if (text.length < 10) {
-        text = $('article').find('p, code, ul, h1, h2, h3, h4, h5, h6').text();
-      }
-      return { feedName, title: $('title').text(), url, text };
-    } catch (error) {
-      console.error(`Failed to fetch article: ${error}`);
-      return null;
-    }
   }
 
   async parseFeedAndExtractTargetEntries(
