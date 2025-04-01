@@ -1,7 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import dotenv from 'dotenv';
 import snoowrap from 'snoowrap';
 
+import { getDateString } from 'libs/date';
+import { GeminiClient } from 'libs/gemini-client';
 import { SUB_REDDITS } from './constant';
+import { generatedSummariesDir } from './tech-feed';
 
 dotenv.config();
 
@@ -33,19 +38,46 @@ const CONFIG = {
   limit: 5,
 };
 
-export class RedditExplorer {
-  private redditClient: snoowrap;
+const MARKDOWN_FORMAT = `
+# {title}
 
-  constructor() {
+**Upvotes**: {upvotes}
+
+{imageOrVideoOrNone}
+
+[View on Reddit]({permalink})
+
+{summary}
+`;
+
+export class RedditExplorer {
+  private targetDate: Date;
+  private redditClient: snoowrap;
+  private geminiClient: GeminiClient;
+
+  constructor(targetDate: Date) {
+    this.targetDate = targetDate;
     this.redditClient = new snoowrap({
       clientId: process.env.REDDIT_CLIENT_ID,
       clientSecret: process.env.REDDIT_CLIENT_SECRET,
       userAgent: process.env.REDDIT_USER_AGENT ?? '',
       refreshToken: process.env.REDDIT_REFRESH_TOKEN,
     });
+    this.geminiClient = new GeminiClient();
   }
 
   async run() {
+    const outputPath = path.join(
+      generatedSummariesDir(),
+      getDateString(this.targetDate),
+      'reddit.md',
+    ); // /generated_summaries/{dateString}/reddit.md に保存する
+
+    if (fs.existsSync(outputPath)) {
+      console.log(`File already exists: ${outputPath}`);
+      return;
+    }
+
     const markdowns: string[] = [];
 
     for (const subreddit of SUB_REDDITS) {
@@ -53,14 +85,28 @@ export class RedditExplorer {
       for (const post of posts) {
         post.comments = await this.retrieveTopCommentsOfPost(post.id);
         post.summary = await this.summarizeRedditPost(post);
+        markdowns.push(this.stylizePost(post));
       }
-      console.log(posts);
+      await new Promise((res) => setTimeout(res, 1000));
     }
+
+    if (markdowns.length === 0) {
+      markdowns.push(`${getDateString(this.targetDate)} の記事はありませんでした。\n\n`);
+    }
+
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(outputPath, markdowns.join('\n---\n'), 'utf-8');
+    console.log(`Saved summaries to ${outputPath}`);
   }
 
   private async summarizeRedditPost(post: RedditPost): Promise<string> {
-    // TODO: gemini clinetを用いてmarkdownの要約を作成する
-    return 'test summary';
+    const commentsText = post.comments
+      .map((comment) => `${comment.upvotes} upvotes: ${comment.text}`)
+      .join('\n');
+    return this.geminiClient.generateContent(
+      this.getContents(),
+      this.systemInstructionFormat(post.title, commentsText, post.text),
+    );
   }
 
   private async retrieveHotPosts(subreddit: string): Promise<RedditPost[]> {
@@ -76,7 +122,8 @@ export class RedditExplorer {
       if (
         post.author.name === 'AutoModerator' ||
         post.title.toLowerCase().includes('megathread') ||
-        post.upvote_ratio < 0.7
+        post.upvote_ratio < 0.7 || // upvoteの割合が 70% 未満（downvoteの方が多い）の投稿を除外
+        post.ups < 25 //  upvote数が 25 未満の投稿を除外
       ) {
         continue;
       }
@@ -142,9 +189,59 @@ export class RedditExplorer {
       null
     );
   }
+
+  private systemInstructionFormat(title: string, comments: string, selftext: string): string {
+    const selfTextSection = selftext
+      ? `投稿文
+    '''
+    ${selftext}
+    '''
+    `
+      : '';
+    return `以下のテキストは、Redditのあるポストのタイトルと${selftext ? '投稿文、そして' : ''}当ポストに対する主なコメントです。
+    
+    よく読んで、ユーザーの質問に答えてください。
+    
+    タイトル
+    '''
+    ${title}
+    '''
+
+    ${selfTextSection}
+    
+    コメント
+    '''${comments}
+    '''`;
+  }
+
+  private getContents(): string {
+    return `
+    以下の2つの質問について、順を追って詳細に、分かりやすく答えてください。
+    
+    1. このポストの内容を説明してください。
+    2. このポストに対するコメントのうち、特に興味深いものを教えてください。
+    
+    この質問の回答以外の出力は不要です。回答はmarkdown形式で出力してください。
+    `;
+  }
+
+  private stylizePost(post: RedditPost): string {
+    const imageOrVideoOrNone =
+      post.type === 'image'
+        ? `![Image](${post.url})`
+        : post.type === 'video' && post.url
+          ? `<video src="${post.url}" controls style="width: 100%; height: auto; max-height: 500px;"></video>`
+          : '';
+
+    return MARKDOWN_FORMAT.replace('{title}', post.title)
+      .replace('{upvotes}', post.upvotes.toString())
+      .replace('{imageOrVideoOrNone}', imageOrVideoOrNone)
+      .replace('{permalink}', post.permalink)
+      .replace('{summary}', post.summary);
+  }
 }
 
 (async () => {
-  const redditExplorer = new RedditExplorer();
+  const redditExplorer = new RedditExplorer(new Date());
   await redditExplorer.run();
 })();
