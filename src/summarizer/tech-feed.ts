@@ -61,8 +61,8 @@ export class TechFeed {
         if (!article) continue;
         article.summary = await this.summarizeArticle(article);
         markdowns.push(this.stylizeArticle(article));
+        await new Promise((res) => setTimeout(res, 1500));
       }
-      await new Promise((res) => setTimeout(res, 1000));
     }
 
     if (markdowns.length === 0) {

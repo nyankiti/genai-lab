@@ -55,6 +55,18 @@ export const WATCHING_TECH_SITES_FRONTEND: SiteMetadata[] = [
     feedUrl: 'https://blog.frankel.ch/feed.xml',
   },
   {
+    siteName: 'blog.jxck.io',
+    feedType: 'atom',
+    siteDescription: 'Web Technology Blog by Jxck',
+    feedUrl: 'https://blog.jxck.io/feeds/atom.xml',
+  },
+  {
+    siteName: 'IK.AM',
+    siteDescription: '槙 俊明さんのブログ',
+    feedType: 'rss',
+    feedUrl: 'https://ik.am/feed',
+  },
+  {
     siteName: 'OpenAI News',
     feedType: 'rss',
     feedUrl: 'https://openai.com/news/rss.xml',
