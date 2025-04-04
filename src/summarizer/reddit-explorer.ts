@@ -78,11 +78,18 @@ export class RedditExplorer {
       return;
     }
 
+    const recentSummarizedArticles = this.getRecentSummarizedArticles();
     const markdowns: string[] = [];
 
     for (const subreddit of SUB_REDDITS) {
       const posts = await this.retrieveHotPosts(subreddit);
       for (const post of posts) {
+        // 直近5日に要約済みかどうかを判定する
+        if (recentSummarizedArticles.includes(post.permalink)) {
+          console.log(`Already summarized: ${post.permalink}`);
+          continue;
+        }
+
         post.comments = await this.retrieveTopCommentsOfPost(post.id);
         post.summary = await this.summarizeRedditPost(post);
         await new Promise((res) => setTimeout(res, 3000));
@@ -238,6 +245,31 @@ export class RedditExplorer {
       .replace('{imageOrVideoOrNone}', imageOrVideoOrNone)
       .replace('{permalink}', post.permalink)
       .replace('{summary}', post.summary);
+  }
+
+  private getRecentSummarizedArticles(): string[] {
+    // 直近5間の要約記事を取得し、permalinkの配列を作成する
+    const generatedSummariesDirPath = generatedSummariesDir();
+    const directories = fs.readdirSync(generatedSummariesDirPath);
+    const threshold = new Date(this.targetDate.getTime() - 5 * 86400000);
+    const recentDirectories = directories.filter((dir) => {
+      const dirDate = new Date(dir);
+      return dirDate >= threshold;
+    });
+    const recentSummaries: string[] = [];
+    for (const dir of recentDirectories) {
+      const filePath = path.join(generatedSummariesDirPath, dir, 'reddit.md');
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const markdowns = content.split('\n---\n');
+      for (const markdown of markdowns) {
+        const match = markdown.match(/\[View on Reddit\]\(([^)]+)\)/);
+        if (match) {
+          const permalink = match[1];
+          recentSummaries.push(permalink);
+        }
+      }
+    }
+    return [...new Set(recentSummaries)];
   }
 }
 
