@@ -85,9 +85,9 @@ export class RedditExplorer {
       for (const post of posts) {
         post.comments = await this.retrieveTopCommentsOfPost(post.id);
         post.summary = await this.summarizeRedditPost(post);
+        await new Promise((res) => setTimeout(res, 3000));
         markdowns.push(this.stylizePost(post));
       }
-      await new Promise((res) => setTimeout(res, 1000));
     }
 
     if (markdowns.length === 0) {
