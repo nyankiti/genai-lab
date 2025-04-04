@@ -123,7 +123,7 @@ export class RedditExplorer {
         post.author.name === 'AutoModerator' ||
         post.title.toLowerCase().includes('megathread') ||
         post.upvote_ratio < 0.7 || // upvoteの割合が 70% 未満（downvoteの方が多い）の投稿を除外
-        post.ups < 25 //  upvote数が 25 未満の投稿を除外
+        post.ups < 35 //  upvote数が 35 未満の投稿を除外
       ) {
         continue;
       }

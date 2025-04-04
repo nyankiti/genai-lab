@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import * as cheerio from 'cheerio';
 import dotenv from 'dotenv';
 import Parser from 'rss-parser';
 

@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const geminiClientConfig = {
-  model: 'gemini-2.0-flash-exp',
+  model: 'gemini-2.0-flash-lite',
   temperature: 1.0,
   topP: 0.95,
   topK: 40,
