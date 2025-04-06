@@ -103,7 +103,7 @@ export class RedditExplorer {
 
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, markdowns.join('\n---\n'), 'utf-8');
-    console.log(`Saved summaries to ${outputPath}`);
+    console.log(`✅ Saved summaries to ${outputPath}`);
   }
 
   private async summarizeRedditPost(post: RedditPost): Promise<string> {

@@ -70,7 +70,7 @@ export class TechFeed {
 
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, markdowns.join('\n---\n'), 'utf-8');
-    console.log(`Saved summaries to ${outputPath}`);
+    console.log(`✅ Saved summaries to ${outputPath}`);
   }
 
   stylizeArticle(article: Article): string {
