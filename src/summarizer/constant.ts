@@ -76,3 +76,15 @@ export const WATCHING_TECH_SITES_FRONTEND: SiteMetadata[] = [
 ];
 
 export const SUB_REDDITS = ['devops', 'Frontend', 'SpringBoot', 'SQL', 'webdev', 'nextjs'];
+
+export const TARGET_LANGUAGES = [
+  'python',
+  'javascript',
+  'typescript',
+  'java',
+  'kotlin',
+  'golang',
+  'rust',
+  'c++',
+  'jupyter notebook',
+];

@@ -44,6 +44,75 @@ export interface PullRequestInfo {
 
 export class RepositoryService {
   constructor(private client: ApolloClient<NormalizedCacheObject>) {}
+
+  /** リポジトリのREADMEを取得する
+   * @param owner リポジトリのオーナー名
+   * @param name リポジトリ名
+   * @returns リポジトリのREADME
+   */
+  async getReadme(owner: string, name: string): Promise<string | null> {
+    const query = gql`
+  query GetReadme($owner: String!, $name: String!) {
+    repository(owner: $owner, name: $name) {
+      object(expression: "HEAD:README.md") {
+        __typename 
+        ... on Blob {
+          text
+        }
+      }
+    }
+  }
+`;
+    try {
+      const result = await this.client.query({
+        query,
+        variables: {
+          owner,
+          name,
+        },
+      });
+      if (result.data.repository.object?.__typename === 'Blob') {
+        return result.data.repository.object.text;
+      }
+      console.warn('README.md is not a Blob or not found.');
+      return null;
+    } catch (error) {
+      console.error('Error fetching README:', error);
+      return null;
+    }
+  }
+
+  /**
+   * リポジトリの詳細情報を取得する
+   * @param owner リポジトリのオーナー名
+   * @param name リポジトリ名
+   * @returns リポジトリ情報
+   */
+  async getRepositoryInfo(owner: string, name: string): Promise<RepositoryInfo | null> {
+    const query = gql`
+  query GetRepository($owner: String!, $name: String!) {
+    repository(owner: $owner, name: $name) {
+      name
+      description
+      url
+    }
+  }
+`;
+    try {
+      const result = await this.client.query({
+        query,
+        variables: {
+          owner,
+          name,
+        },
+      });
+      return result.data.repository as RepositoryInfo;
+    } catch (error) {
+      console.error('Error fetching repository information:', error);
+      return null;
+    }
+  }
+
   /**
    * 直近1週間のマージ済みPRの詳細情報を取得する
    * @param owner リポジトリのオーナー名

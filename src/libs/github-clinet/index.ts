@@ -42,4 +42,24 @@ export class GithubClient {
   ): Promise<RepositoryInfo | null> {
     return this.repositoryService.getMergedPRsLastWeek(owner, name, prCount, daysAgo);
   }
+
+  /**
+   * リポジトリの詳細情報を取得する
+   * @param owner リポジトリのオーナー名
+   * @param name リポジトリ名
+   * @returns リポジトリ情報
+   */
+  async getRepositoryInfo(owner: string, name: string): Promise<RepositoryInfo | null> {
+    return this.repositoryService.getRepositoryInfo(owner, name);
+  }
+
+  /**
+   * リポジトリのREADMEを取得する
+   * @param owner リポジトリのオーナー名
+   * @param name リポジトリ名
+   * @returns READMEの内容
+   */
+  async getRepositoryReadme(owner: string, name: string): Promise<string | null> {
+    return this.repositoryService.getReadme(owner, name);
+  }
 }
