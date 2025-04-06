@@ -34,7 +34,7 @@ class RedditPost {
 
 const CONFIG = {
   techFeedMaxEntriesPerDay: 10,
-  thresholdDays: 2,
+  thresholdDays: 1,
   limit: 5,
 };
 
