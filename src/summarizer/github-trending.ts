@@ -63,11 +63,6 @@ export class GithubTrending {
         console.log(`Already summarized: ${repo.link}`);
         continue;
       }
-      // wchat対象でない言語の場合は除外
-      if (!TARGET_LANGUAGES.includes(repo.language.toLowerCase())) {
-        console.log(`Not target language: ${repo.name}, ${repo.description}, ${repo.link}`);
-        continue;
-      }
 
       const repoReadme = await this.githubClinet.getRepositoryReadme(
         repo.name.split('/')[0],
@@ -109,6 +104,7 @@ export class GithubTrending {
    * @throws エラーが発生した場合
    * @description
    * GitHubのトレンドリポジトリを取得する
+   * wchat対象でない言語の場合は除外
    * 取得するリポジトリは、上位8件を取得する
    * トレンドリポジトリはGitHub GraphQL APIでは取得できないので、HTMLをパースして取得する
    */
@@ -141,7 +137,12 @@ export class GithubTrending {
       });
     });
 
-    return repos.slice(0, 8); // 上位8件を取得
+    return (
+      repos
+        // wchat対象でない言語の場合は除外
+        .filter((repo) => TARGET_LANGUAGES.includes(repo.language.toLowerCase()))
+        .slice(0, 8)
+    ); // 上位8件を取得
   }
 
   /**
