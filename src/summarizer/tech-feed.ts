@@ -19,7 +19,7 @@ export const generatedSummariesDir = () => path.join(repoRoot, 'generated_summar
 
 const CONFIG = {
   techFeedMaxEntriesPerDay: 10,
-  thresholdDays: 2,
+  thresholdDays: 1,
 };
 
 export class TechFeed {
