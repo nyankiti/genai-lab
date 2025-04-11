@@ -5,14 +5,14 @@ import { type RepositoryInfo, RepositoryService } from './repository';
 // for local
 dotenv.config();
 
-const githubPersonalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
+const githubPersonalAccessToken = process.env.GH_PERSONAL_ACCESS_TOKEN;
 
 export class GithubClient {
   private client: ApolloClient<NormalizedCacheObject>;
   private repositoryService: RepositoryService;
   constructor() {
     if (!githubPersonalAccessToken) {
-      throw new Error('GITHUB_PERSONAL_ACCESS_TOKEN is not set');
+      throw new Error('GH_PERSONAL_ACCESS_TOKEN is not set');
     }
     this.client = new ApolloClient({
       uri: 'https://api.github.com/graphql',

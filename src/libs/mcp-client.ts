@@ -52,14 +52,14 @@ export class MyMCPClient {
       apiKey: process.env.GROQ_API_KEY,
     });
 
-    const githubPersonalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
-    if (!githubPersonalAccessToken) throw new Error('GITHUB_PERSONAL_ACCESS_TOKEN is not set');
+    const githubPersonalAccessToken = process.env.GH_PERSONAL_ACCESS_TOKEN;
+    if (!githubPersonalAccessToken) throw new Error('GH_PERSONAL_ACCESS_TOKEN is not set');
 
     this.transport = new StdioClientTransport({
       command: 'tsx',
       args: [myMCPServerScriptPath],
       env: {
-        GITHUB_PERSONAL_ACCESS_TOKEN: githubPersonalAccessToken,
+        GH_PERSONAL_ACCESS_TOKEN: githubPersonalAccessToken,
         ...(process.env as Record<string, string>),
       },
     });
