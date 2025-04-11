@@ -175,8 +175,3 @@ export class GithubTrending {
     return [...new Set(recentSummaries)];
   }
 }
-
-(async () => {
-  const githubTrending = new GithubTrending(new Date());
-  await githubTrending.run();
-})();
