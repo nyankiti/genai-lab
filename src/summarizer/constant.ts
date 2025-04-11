@@ -73,7 +73,24 @@ export const WATCHING_TECH_SITES_FRONTEND: SiteMetadata[] = [
     siteDescription:
       'OpenAIの最新情報や研究成果を紹介する公式ブログ。AI技術の進展に関する洞察が得られる。',
   },
+  {
+    siteName: 'Google Chrome Developers Blog',
+    feedType: 'rss',
+    feedUrl: 'https://developer.chrome.com/feeds?hl=ja',
+    siteDescription:
+      'Google Chromeの開発者向け公式ブログ。最新のブラウザ技術や開発ツールに関する情報が得られる。',
+  },
+  {
+    siteName: 'jser.info',
+    feedType: 'rss',
+    feedUrl: 'https://jser.info/rss/',
+    siteDescription: 'JavaScriptの最新情報を紹介する週刊ブログ',
+  },
 ];
+
+// https://javascriptweekly.com
+// https://jser.info/
+// https://www.mitsue.co.jp/knowledge/blog/
 
 export const SUB_REDDITS = ['devops', 'Frontend', 'SpringBoot', 'SQL', 'webdev', 'nextjs'];
 

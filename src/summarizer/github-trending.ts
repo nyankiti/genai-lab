@@ -162,14 +162,19 @@ export class GithubTrending {
     const recentSummaries: string[] = [];
     for (const dir of recentDirectories) {
       const filePath = path.join(generatedSummariesDirPath, dir, 'github-trending.md');
-      const content = fs.readFileSync(filePath, 'utf-8');
-      const markdowns = content.split('\n---\n');
-      for (const markdown of markdowns) {
-        const match = markdown.match(/\[View Repository on Github\]\(([^)]+)\)/);
-        if (match) {
-          const permalink = match[1];
-          recentSummaries.push(permalink);
+      try {
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const markdowns = content.split('\n---\n');
+        for (const markdown of markdowns) {
+          const match = markdown.match(/\[View Repository on Github\]\(([^)]+)\)/);
+          if (match) {
+            const permalink = match[1];
+            recentSummaries.push(permalink);
+          }
         }
+      } catch {
+        // ファイルが存在しない場合はスキップ
+        console.log(`File not found: ${filePath}`);
       }
     }
     return [...new Set(recentSummaries)];
