@@ -399,3 +399,246 @@ OpenAIの安全性諮問グループ（SAG）は、これらのモデルの準�
 **まとめ:**
 
 OpenAI o3 および o4-mini は、高度な推論能力と多様なツール機能を備えた新しいAIモデルです。OpenAIは、これらのモデルの安全性と堅牢性を高めるための取り組みを継続し、安全なAI開発を目指しています。
+
+---
+# 2025-04-09のJS: express 5.1(正式リリース)、Safari 18.4、ESLint bulk suppressions - JSer.info
+
+[View on jser.info](https://jser.info/2025/04/09/express-5.1-safari-18.4-eslint-bulk-suppressions/)
+
+## JSer.info #731 概要
+
+2025年4月9日のJSer.infoは、Express 5.1の正式リリース、Safari 18.4のリリース、ESLintのbulk suppressions機能の紹介を中心に、JavaScript関連の最新情報がまとめられています。
+
+**主要なトピック:**
+
+*   **Express 5.1.0 (正式リリース):**
+    *   Express 5.xシリーズの正式リリース。
+    *   npmでのデフォルトバージョンが5.xに変更。
+    *   ドキュメントの刷新と、4.xから5.xへの移行を支援するcodemodマイグレーションツールを提供。
+    *   LTS (Long Term Support) ポリシーが発表され、Express 4.xは2026年10月1日にサポート終了予定。
+*   **Safari 18.4 リリース:**
+    *   **Declarative Web Push のサポート:** Service Worker を使用せずにプッシュ通知を管理できる新機能。
+    *   **CSS 関連:** `shape()`関数、writing-mode の横書きモード、`text-autospace` のサポート。
+    *   **Web API:** Image Capture API、iOS/iPad OS での Screen Wake Lock API、Cookie Store API のサポート。
+    *   **JavaScript 関連:** ES2025 の Iterator Helpers、Stage 3 の `Error.isError` のサポート。
+*   **ESLint bulk suppressions:**
+    *   既存のコードベースにESLintを導入する際に、既存のエラーを抑制しつつ、新規追加ファイルにのみルールを適用できる機能。
+    *   `eslint-suppressions.json` を生成し、そこに記録された違反を無視することで実現。
+*   **その他:**
+    *   Cookie Store API、ArrayBuffer、React Query の API デザイン、Standard Schema を JSON Schema へ変換するライブラリ、StarlingMonkey (Wasm最適化SpiderMonkeyベースのJSエンジン)、bare (モバイル/組み込み向けJSランタイム)、es-git (Node.jsのN-APIを使ったGitバインディングライブラリ) など、様々なJavaScript関連技術の情報が紹介されています。
+
+**記事の補足:**
+
+*   Safari 18.4 の Declarative Web Push は、ITP (Intelligent Tracking Prevention) 対応により Service Worker が削除されプッシュ通知が送れなくなる問題を解決するためのものです。
+*   ESLint の bulk suppressions は、既存のプロジェクトに Lint を導入する際の、一度に大量のエラーが発生する問題を解決し、段階的な移行を容易にするための機能です。
+
+---
+# 2025-04-03のJS: Next.js LTS Policy、Rsdoctor 1.0、zx@lite - JSer.info
+
+[View on jser.info](https://jser.info/2025/04/03/next.js-lts-policy-rsdoctor-1.0-zxlite/)
+
+JSer.info #730 の要約です。
+
+**Next.js に関する情報:**
+
+*   **Next.js LTS (Long Term Support) ポリシー:** メジャーバージョンごとに、Active LTS（最新バージョン）とMaintenance LTS（2年間）が提供されます。このポリシーは、Next.js のミドルウェアバイパスに関するポストモーテムの一環として公開されました。
+
+**ツールに関する情報:**
+
+*   **Rsdoctor 1.0:** webpack-bundle-analyzer のようにバンドルサイズ分析やビルド分析を行うツールで、rspack または webpack で利用できます。
+*   **zx 8.5.0:** より小さいサイズのパッケージである zx@lite が追加されました。npm/GitHub/JSR/homebrew/Docker など、様々な方法でインストールできます。
+
+**その他のリリース情報:**
+
+*   **Biome v2.0 beta:** プラグイン追加、Linter の機能追加など。
+*   **React v19.1.0:** captureOwnerStack API の追加、<Suspense> の配置変更、react-server-dom-parcel パッケージ追加など。
+*   **Bun v1.2.7:** Cookie の読み書きを行う Bun.Cookie/Bun.CookieMap の追加など。
+*   **lerna-lite v4.0.0:** Node.js 18 のサポート終了、依存関係のアップデートなど。
+*   **Rspack 1.3:** 循環参照検出プラグインの追加、Lazy compilation の導入など。
+*   **ES2025 Candidate:** 2025年6月の Ecma GA で承認されれば正式リリース予定。
+*   **tailwindcss v4.1.0:** 新しい variant、utilities の追加など。
+*   **Firefox 137:** CSS の hyphenate-limit-chars プロパティ、JavaScript の Math.sumPrecise()、Atomics.pause() のサポート。SVG の <discard> 要素のサポート。DevTools の機能拡張など。
+*   **Node.js v23.11.0:** assert.partialDeepStrictEqual、crypto.diffieHellman などの追加。
+*   **URLPattern API:** Node.js、Cloudflare Workers、Deno などでサポートされている URLPattern API について。
+*   **CSS レイアウト:** display: masonry に代わる flexbox, grid に対するプロパティ追加に関する議論。
+
+**書籍:**
+
+*   Effective TypeScript 第2版
+
+---
+# More accurate DevTools performance debugging using real-world data  |  Blog  |  Chrome for DevelopersGitHubBluesky
+
+[View on Google Chrome Developers Blog](https://developer.chrome.com/blog/devtools-grounded-real-world?hl=en)
+
+## 詳細な要約：DevToolsのパフォーマンスデバッグを実世界のデータでより正確に
+
+この記事は、Chrome DevToolsのパフォーマンスパネルを改善するためのChromeの開発努力について、特に実世界のデータに基づいたパフォーマンスデバッグを可能にする新機能に焦点を当てています。開発環境とユーザーの多様なパフォーマンス体験とのギャップを埋めることを目的としています。
+
+**主な内容:**
+
+*   **CPUスロットリングキャリブレーション:**
+    *   Chrome 134から導入された新しいツールで、適切なCPUスロットリングレベルの選択における不確実性を排除します。
+    *   キャリブレーションを実行すると、開発マシンに合わせた「ローティアモバイル」と「ミッドティアモバイル」のスロットリングプリセットが生成されます。
+    *   これにより、開発者が高速なデスクトップデバイスでサイトを構築し、多くのユーザーが性能の低いモバイルデバイスを使用しているというミスマッチに対応します。
+
+*   **CPUスロットリングの仕組み:**
+    *   CPUスロットリングは、タブのメインスレッドを短時間で頻繁に中断および一時停止させることで機能します。
+    *   これにより、メインスレッドでの作業にかかる時間が長くなり、CPUの負荷が高いモバイルデバイスをシミュレートできます。
+    *   たとえば、4倍のCPUスロットリングでは、メインスレッドは時間の約75%で一時停止し、作業時間は4倍になります。
+
+*   **CPUスロットリングの限界:**
+    *   モバイルハードウェアのすべての側面をシミュレートできるわけではありません。
+    *   GPU負荷の高い作業、ディスク速度、メモリ帯域幅、熱スロットリングなど、一部の要素はCPUスロットリングでは正確に再現できません。
+    *   GPU負荷の高いCSSアニメーションやエフェクトなど、開発マシンでは問題なく動作しても、モバイルデバイスではパフォーマンスが低下する可能性があります。
+
+*   **実世界のデータに基づいたその他の改善点:**
+    *   パフォーマンスパネルは、Chrome User Experience Report (CrUX)によって測定された75パーセンタイルのユーザーに基づいて、スロットリングに関する提案を行います。
+    *   リアルタイムのメトリックビューは、ローカルで測定されたメトリックが実世界のデータと異なる場合に警告を発します。
+    *   トレース内のメトリックが、ユーザーが実際に経験しているものと一致しない場合、パフォーマンスパネルのインサイトが警告を発します。
+    *   75パーセンタイルのCore Web Vitalsを使用して、インサイトの表示順序をランク付けします。
+    *   パフォーマンスパネルのトレース選択ドロップダウンに、各トレースのモバイルエミュレーション情報が表示されます。
+
+*   **まとめ:**
+    *   デバッグの決定は、実世界のデータに基づいている必要があります。
+    *   CPUスロットリングのキャリブレーションと、実世界のデータとラボでのエクスペリエンスの差異に関する警告は、適切な方法で作業しているかどうかの不確実性を減らし、実世界のパフォーマンスのより一貫した近似を可能にします。
+    *   DevToolsは、設定に関する推測をなくし、潜在的な不一致を強調することで、ユーザーに影響を与える実際のパフォーマンス問題の修正に時間を費やすのに役立ちます。
+
+この記事は、実世界のデータとDevToolsの機能を組み合わせることで、開発者がより正確にパフォーマンスの問題を特定し、ユーザーエクスペリエンスを向上させるのに役立つように設計されています。
+
+---
+# Chrome 136 beta  |  Blog  |  Chrome for DevelopersXGitHubLinkedInMastodonBlueskyHomepage
+
+[View on Google Chrome Developers Blog](https://developer.chrome.com/blog/chrome-136-beta?hl=en)
+
+## Chrome 136 Beta リリース概要（日本語）
+
+Chrome 136 ベータ版のリリースについて、開発者向けのブログ記事を要約します。
+
+**概要:**
+
+Chrome 136 ベータ版は、Android、ChromeOS、Linux、macOS、Windows 向けにリリースされ、多数の新機能、CSS/UI 関連の機能強化、Web API の更新、セキュリティとプライバシーの改善、開発者向け機能、および試験運用（Origin Trials）が導入されています。
+
+**主な変更点:**
+
+*   **CSS と UI:**
+    *   `dynamic-range-limit` プロパティの追加（HDR コンテンツの最大輝度制限）
+    *   カーシブスクリプトにおける letter-spacing の無視
+    *   `:visited` リンク履歴のパーティション化（プライバシー保護強化）
+    *   `string attr()` の `raw-string` への変更
+    *   `var()` の型非依存フォールバック
+    *   `print-color-adjust` プロパティの標準化
+*   **Web API:**
+    *   `AudioContext` の "interrupted" 状態の追加
+    *   Blob URL のストレージキーによるパーティション化（Storage Partitioning の継続）
+    *   非応答 Web ページからのクラッシュレポートへのコールスタックの追加
+    *   Captured Surface Control API の導入
+    *   CapturedSurfaceResolution API の追加
+    *   キャプチャされたポインターへのクリックイベントのディスパッチ
+    *   マジックコメントによるコンパイルヒント
+    *   FedCM の複数 IdP サポートとパッシブモードでの機能削除
+    *   Fluent Scrollbars（Windows 11 スタイルのスクロールバー）
+    *   WebRTC での H265 (HEVC) コーデックのサポート
+    *   MediaRecorder API での HEVC エンコーディングのサポート
+    *   Chrome Enterprise における IP アドレスロギングとレポート
+    *   HTTP キャッシュキーへのナビゲーションイニシエーターの組み込み
+    *   `<canvas>` の `lang` 属性のサポート
+    *   Permissions Policy レポートでの新しい違反タイプ
+    *   予測可能なストレージクォータの報告
+    *   Private Aggregation API での集約エラーレポート
+    *   RegExp.escape の追加
+    *   Speculation rules へのタグフィールドの追加
+    *   Storage Access API の Strict Same Origin Policy
+    *   ProgressEvent 属性の型を double に変更
+    *   DOMPointInit の使用
+    *   Web Authentication の条件付き作成（Passkey アップグレード）
+    *   WebGPU: `GPUAdapterInfo.isFallbackAdapter` 属性
+*   **試験運用（Origin Trials）:**
+    *   Audio Output Devices API: `setDefaultSinkId()`
+    *   Web アプリケーションのパフォーマンス分析
+    *   Device Bound Session Credentials
+    *   Canvas テキストレンダリング実装の更新
+*   **非推奨と削除:**
+    *   Intl Locale Info のゲッターの非推奨化
+    *   `HTMLFencedFrameElement.canLoadOpaqueURL()` の削除
+
+**その他:**
+
+*   Chrome 136 は、2025 年 4 月 3 日にベータ版としてリリース。
+*   Google.com (デスクトップ版) および Google Play Store (Android 版) からダウンロード可能。
+*   詳細な情報は、ChromeStatus.com または関連するドキュメントを参照。
+
+**注記:**
+
+記事内では、各機能の概要、目的、および実装に関する技術的な詳細が示されています。開発者は、これらの情報を通じて、Chrome 136 で導入された変更を理解し、自身の Web サイトやアプリケーションへの影響を評価できます。
+
+---
+# Insights sidebar in the DevTools Performance panel  |  Blog  |  Chrome for DevelopersGitHubBluesky
+
+[View on Google Chrome Developers Blog](https://developer.chrome.com/blog/devtools-insights-sidebar?hl=en)
+
+このブログ記事は、Chrome DevTools Performanceパネルに統合された「Insights」サイドバーについて解説しています。このサイドバーは、LighthouseのインサイトをPerformanceパネルに直接表示し、パフォーマンスの問題を特定しやすくするためのツールです。
+
+**主な内容:**
+
+*   **Insightsサイドバーの概要:** パフォーマンスのトレース中にLighthouseのインサイトを表示し、関連するイベントをタイムライン上でハイライト表示します。Chrome 131以降で導入され、以降のリリースで機能が拡張されています。
+*   **使い方:** Performanceパネルで記録を開始し、ページの読み込みや操作を行った後、記録を停止すると、サイドバーにインサイトが表示されます。インサイトをクリックすると、トレースの関連部分が拡大表示され、問題の特定を支援します。
+*   **インサイトの種類:**
+    *   **ページ読み込みに関するインサイト:** LCP（Largest Contentful Paint）の改善に焦点を当てたインサイト（LCPの各段階の分析、リクエストの最適化など）や、LCP以外のページ読み込みに関連するインサイト（サードパーティリソースの分析、フォント表示の最適化、ネットワーク依存関係の分析など）。
+    *   **応答性に関するインサイト:** INP（Interaction to Next Paint）の分析、DOMサイズの最適化、ビューポートの設定など、ページの応答性に関連する問題の特定を支援するインサイト。
+    *   **レイアウトの安定性に関するインサイト:** CLS（Cumulative Layout Shift）の分析、レイアウトシフトの原因となる要素の特定を支援するインサイト。
+*   **LCPに関する詳細:** LCPの各フェーズを分析し、どの部分に時間がかかっているかを可視化します。
+*   **その他:** サードパーティリソースのパフォーマンス分析、フォント表示の最適化、ネットワーク依存関係の特定、画像配信の改善など、幅広いパフォーマンス問題に対するインサイトが提供されます。
+*   **今後の展望:** 現状のインサイトを改善し、新しいインサイトを追加していく予定とのことです。
+
+記事は、InsightsサイドバーがLighthouseの機能をPerformanceパネルに統合し、トレースの理解を深め、データとの関連性を高めることを目指していると結論付けています。
+
+---
+# Making :visited more private  |  Blog  |  Chrome for Developers
+
+[View on Google Chrome Developers Blog](https://developer.chrome.com/blog/visited-links?hl=en)
+
+## Chromeにおける`:visited`のプライバシー強化について
+
+本記事は、Chrome for Developersブログで公開された、`:visited`セレクタのプライバシーに関する改善について解説しています。
+
+**要約:**
+
+*   **問題点:** ウェブサイトは、ユーザーが以前にクリックしたリンクに対してカスタムスタイルを適用するためにCSSの`:visited`セレクタを使用してきました。しかし、この機能はユーザーのブラウジング履歴を漏洩させる攻撃に悪用される可能性がありました。攻撃者は、`:visited`セレクタを利用して、ユーザーがどのリンクを訪問したかを特定し、ブラウジング履歴の詳細を推測することができました。
+*   **解決策:** Chrome 136から、Chromeは`:visited`リンクの履歴を分割（partitioning）することで、この問題を解決しました。
+    *   **リンク履歴の分割:**  `:visited`履歴は、リンクがクリックされたコンテキスト（リンクのURL、トップレベルサイト、フレームオリジン）とともに保存されます。これにより、あるサイトで訪問したリンクが、他のサイトで`:visited`として表示されることがなくなります。
+    *   **自己リンクの例外:**  同一サイト内のサブページへのリンクについては、ユーザーエクスペリエンスを向上させるため、例外が設けられています。サイトは、自サイトのサブページへのリンクを`:visited`として表示できます。ただし、これは第三者のサイトへのリンクや、サードパーティのiframe内のリンクには適用されません。
+*   **効果:**  この改善により、サイトはユーザーのブラウジング履歴をクロスサイトで追跡することがより困難になり、セキュリティが向上します。
+*   **その他:**  Chromeは、これらのプライバシー保護を実装した最初の主要ブラウザです。記事内には、より詳しい議論や問題提起、バグ報告のための情報も記載されています。
+
+
+---
+# New in Chrome 135  |  Blog  |  Chrome for DevelopersXGitHubLinkedInMastodonBlueskyHomepage
+
+[View on Google Chrome Developers Blog](https://developer.chrome.com/blog/new-in-chrome-135?hl=en)
+
+## Chrome 135 の新機能: 要約
+
+この記事は、Chrome 135 の主な新機能を紹介しています。
+
+**主な新機能:**
+
+*   **CSS カルーセル:**  `::scroll-button()` と `::scroll-marker()`  といった新しい CSS 擬似要素により、スクロール可能な領域をカルーセルとして実装できるようになりました。  詳細は  「Carousels with CSS」を参照してください。
+*   **`command` と `commandfor` 属性:**  `popovertargetaction` と `popovertarget` 属性を置き換える新しい属性で、ボタンに宣言的な動作を提供します。これにより、シンプルさとアクセシビリティが向上し、組み込みの共通機能が提供されます。詳細は「Introducing command and commandfor」を参照してください。
+*   **`shape()` CSS 関数:**  `clip-path` と `offset-path` プロパティの形状を定義するために使用されます。 これは、より標準的な CSS 構文で、追加の単位や数学関数などのフルレンジの CSS 機能を提供します。
+*   **その他:**
+    *   Web Speech API に MediaStreamTrack のサポートが追加されました。
+    *   Float16Array がサポートされ、Baseline Newly available になりました。
+    *   Observable API がサポートされました。
+
+**さらに詳しく知りたい方へ:**
+
+*   Chrome 135 リリースノート
+*   Chrome DevTools の新機能 (135)
+*   ChromeStatus.com の Chrome 135 アップデート
+*   Chrome リリースカレンダー
+
+Chrome Developers YouTube チャンネルを購読するか、X や LinkedIn でフォローして、最新情報を入手してください。
+
+記事は 2025 年 4 月 1 日に公開されています。
+

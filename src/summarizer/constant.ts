@@ -76,7 +76,7 @@ export const WATCHING_TECH_SITES_FRONTEND: SiteMetadata[] = [
   {
     siteName: 'Google Chrome Developers Blog',
     feedType: 'rss',
-    feedUrl: 'https://developer.chrome.com/feeds?hl=ja',
+    feedUrl: 'https://developer.chrome.com/blog/feed.xml',
     siteDescription:
       'Google Chromeの開発者向け公式ブログ。最新のブラウザ技術や開発ツールに関する情報が得られる。',
   },
@@ -87,10 +87,6 @@ export const WATCHING_TECH_SITES_FRONTEND: SiteMetadata[] = [
     siteDescription: 'JavaScriptの最新情報を紹介する週刊ブログ',
   },
 ];
-
-// https://javascriptweekly.com
-// https://jser.info/
-// https://www.mitsue.co.jp/knowledge/blog/
 
 export const SUB_REDDITS = ['devops', 'Frontend', 'SpringBoot', 'SQL', 'webdev', 'nextjs'];
 
