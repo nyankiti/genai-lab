@@ -3,8 +3,6 @@
     "target": "ES2022",
     "lib": ["ES2022"],
     "module": "NodeNext",
-    "rootDir": "src",
-    "baseUrl": "src",
     "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
     "sourceMap": true,
@@ -15,6 +13,10 @@
     "skipLibCheck": true,
     "traceResolution": false
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "apps/tech-summarizer/generatePagesArtifact.ts",
+    "apps/mastra-app/src/index.ts"
+  ],
   "exclude": ["node_modules"]
 }

@@ -1,4 +1,4 @@
-import { MyMCPClient } from 'libs/mcp-client';
+import { MyMCPClient } from 'mcp-client';
 
 async function main() {
   const client = new MyMCPClient();

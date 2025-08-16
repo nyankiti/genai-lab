@@ -2,7 +2,7 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { distDir } from 'libs/file';
-import { generatedSummariesDir } from 'summarizer/tech-feed';
+import { generatedSummariesDir } from 'tech-feed';
 
 const generateSummariesJson = async () => {
   const summaryDirs = await readdir(generatedSummariesDir());

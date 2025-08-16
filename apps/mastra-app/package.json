@@ -1,0 +1,16 @@
+{
+  "name": "mastra-app",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "tsc",
+    "dev:mastra": "mastra dev"
+  },
+  "packageManager": "pnpm@10.6.3",
+  "dependencies": {
+    "@ai-sdk/google": "^1.2.12",
+    "@mastra/core": "^0.13.2",
+    "mastra": "^0.10.21",
+    "zod": "^3.24.2"
+  }
+}

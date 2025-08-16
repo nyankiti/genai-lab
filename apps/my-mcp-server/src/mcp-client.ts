@@ -21,7 +21,7 @@ const githubMCPServerScriptPath = path.join(
   'dist',
   'index.js',
 );
-const myMCPServerScriptPath = path.join(process.cwd(), 'src', 'libs', 'mcp-server', 'index.ts');
+const myMCPServerScriptPath = path.join(process.cwd(), 'src', 'mcp-server', 'index.ts');
 
 // 以下のdeepseekのモデルだとreasoningを受け付けない（ドキュメントには受け付けていると書いているが...）
 // const MODEL_NAME = "deepseek-r1-distill-llama-70b";
