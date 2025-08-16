@@ -39,7 +39,7 @@ jobs:
           REDDIT_ACCESS_TOKEN: ${{ secrets.REDDIT_ACCESS_TOKEN }}
           GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           GITHUB_WORKSPACE: $GITHUB_WORKSPACE
-        run: pnpm run generateSummaries
+        run: pnpm --filter tech-summarizer generateSummaries
       - name: diff
         id: diff
         run: |
